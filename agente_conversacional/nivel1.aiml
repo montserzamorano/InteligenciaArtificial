@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+<!-- Author: Montse -->
+
+<!-- Regla que permite comparar dos cadenas, si son iguales devuelve YES en otro caso devuelve NO-->
+<category>
+    <pattern>
+        COMPARE * WITH *
+    </pattern>
+    <template>
+        <think><set var="local"><uppercase><star index="2"/></uppercase></set></think>
+        <condition var="local">
+            <li><value><uppercase><star/></uppercase></value>YES</li>
+            <li>NO</li>
+        </condition>
+    </template>
+</category>
+
+<!-- NIVEL 1: ADIVINAR EL PERSONAJE QUE PIENSA EL AGENTE -->
+<!-- Comienzo del juego -->
+<category>
+<pattern>piensa un personaje</pattern>
+<template>
+  <think>
+    <set name="elegida">
+    <random>
+      <li>Alejandro</li>
+      <li>Alfonso</li>
+      <li>Antonio</li>
+      <li>Cristina</li>
+      <li>Gabriela</li>
+      <li>Ivan</li>
+      <li>Javier</li>
+      <li>Juan</li>
+      <li>Laura</li>
+      <li>Luis</li>
+      <li>Marco</li>
+      <li>Maria</li>
+      <li>Paco</li>
+      <li>Pepe</li>
+      <li>Sofia</li>
+      <li>Sonia</li>
+    </random>
+    </set>
+    <set name="ojos"><map name="ojos"><get name="elegida"/></map></set>
+    <set name="pelo"><map name="pelo"><get name="elegida"/></map></set>
+    <set name="piel"><map name="piel"><get name="elegida"/></map></set>
+    <set name="gafas"><map name="gafas"><get name="elegida"/></map></set>
+    <set name="bigote"><map name="bigote"><get name="elegida"/></map></set>
+    <set name="barba"><map name="barba"><get name="elegida"/></map></set>
+    <set name="sexo"><map name="sexo"><get name="elegida"/></map></set>
+  </think>
+  <get name="elegida"/>
+</template>
+</category>
+
+<!-- Color de pelo -->
+<category>
+<pattern>tiene el pelo * </pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE <star/> WITH <get name="pelo"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<category>
+<pattern>es calvo</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE calvo WITH <get name="pelo"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<!-- Color de ojos -->
+<category>
+<pattern>tiene los ojos * </pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE <star/> WITH <get name="ojos"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<!-- Color de piel -->
+<category>
+<pattern>tiene la piel * </pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE <star/> WITH <get name="piel"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+<!-- Gafas -->
+<category>
+<pattern>tiene gafas</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE si WITH <get name="gafas"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+<!-- Bigote -->
+<category>
+<pattern>tiene bigote</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE si WITH <get name="bigote"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+<!-- Barba -->
+<category>
+<pattern>tiene barba</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE si WITH <get name="barba"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<!-- Sexo -->
+<category>
+<pattern>es hombre</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE si WITH <get name="sexo"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<category>
+<pattern>es mujer</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE si WITH <get name="sexo"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<!-- Adivinar -->
+<category>
+<pattern>es *</pattern>
+<template>
+  <think>
+    <set var="coincide">
+    <srai>COMPARE <star/> WITH <get name="elegida"/></srai>
+    </set>
+  </think>
+    <condition var="coincide">
+      <li value="YES">
+      Si
+      </li>
+      <li value="NO">
+      No
+      </li>
+    </condition>
+</template>
+</category>
+
+<!-- Ayudar a conocer los rasgos de los personajes: Pelo -->
+
+<category>
+<pattern>Tiene * el pelo * </pattern>
+<template>
+  <think>
+    <set var="colorPelo"><map name="pelo"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE <star index="2"/> WITH <get var="colorPelo"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<category>
+<pattern> * es * </pattern>
+<template> <srai> TIENE <star index="1"/> EL PELO <star index="2"/> </srai> </template>
+</category>
+
+<!-- Ojos -->
+
+<category>
+<pattern>Tiene * los ojos * </pattern>
+<template>
+  <think>
+    <set var="colorOjos"><map name="ojos"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE <star index="2"/> WITH <get var="colorOjos"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<!-- Piel -->
+
+<category>
+<pattern>Tiene * la piel * </pattern>
+<template>
+  <think>
+    <set var="colorPiel"><map name="piel"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE <star index="2"/> WITH <get var="colorPiel"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<!-- Gafas -->
+
+<category>
+<pattern>Tiene * gafas </pattern>
+<template>
+  <think>
+    <set var="tenerGafas"><map name="gafas"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE si WITH <get var="tenerGafas"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<!-- Bigote -->
+
+<category>
+<pattern>Tiene * bigote </pattern>
+<template>
+  <think>
+    <set var="tenerBigote"><map name="bigote"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE si WITH <get var="tenerBigote"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<!-- Barba -->
+
+<category>
+<pattern>Tiene * barba </pattern>
+<template>
+  <think>
+    <set var="tenerBarba"><map name="barba"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE si WITH <get var="tenerBarba"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<!-- Sexo -->
+<category>
+<pattern>Es * mujer</pattern>
+<template>
+  <think>
+    <set var="sexoP"><map name="sexo"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE mujer WITH <get var="sexoP"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+<category>
+<pattern>Es * hombre</pattern>
+<template>
+  <think>
+    <set var="sexoP"><map name="sexo"><star index="1"/></map></set>
+    <set var="coincide">
+      <srai> COMPARE hombre WITH <get var="sexoP"/> </srai>
+    </set>
+  </think>
+  <condition var="coincide">
+    <li value="YES">
+      Si
+    </li>
+    <li value="NO">
+      No
+    </li>
+  </condition>
+</template>
+</category>
+
+</aiml>
