@@ -2,6 +2,7 @@
 <aiml version="2.0">
 
 <!-- Author: Montse -->
+<!-- NIVEL 2: EL AGENTE TRATA DE ADIVINAR EL PERSONAJE PENSADO POR EL HUMANO -->
 
 <!-- Conjunto de reglas para devolver la primera palabra de una frase -->
 <!-- Si la frase no contiene palabras devuelve "end" -->
@@ -910,7 +911,6 @@
 </template>
 </category>
 
-<!-- NIVEL 2: EL AGENTE TRATA DE ADIVINAR EL PERSONAJE PENSADO POR EL HUMANO -->
 <!-- Comienzo del juego -->
 <category>
 <pattern>^ pensar ^ </pattern>
