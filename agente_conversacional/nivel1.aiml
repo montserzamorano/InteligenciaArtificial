@@ -20,7 +20,7 @@
 <!-- NIVEL 1: ADIVINAR EL PERSONAJE QUE PIENSA EL AGENTE -->
 <!-- Comienzo del juego -->
 <category>
-<pattern>piensa un personaje</pattern>
+<pattern> ^ eliges ^ </pattern>
 <template>
   <think>
     <set name="elegida">
@@ -52,6 +52,10 @@
     <set name="sexo"><map name="sexo"><get name="elegida"/></map></set>
   </think>
   <get name="elegida"/>
+  <random>
+    <li> Ya lo he pensado! </li>
+    <li> De acuerdo... empieza a preguntar! </li>
+  </random>
 </template>
 </category>
 
@@ -193,11 +197,11 @@
 
 <!-- Sexo -->
 <category>
-<pattern>es hombre</pattern>
+<pattern>es ^ hombre</pattern>
 <template>
   <think>
     <set var="coincide">
-    <srai>COMPARE si WITH <get name="sexo"/></srai>
+    <srai>COMPARE hombre WITH <get name="sexo"/></srai>
     </set>
   </think>
     <condition var="coincide">
@@ -212,11 +216,11 @@
 </category>
 
 <category>
-<pattern>es mujer</pattern>
+<pattern>es ^ mujer</pattern>
 <template>
   <think>
     <set var="coincide">
-    <srai>COMPARE si WITH <get name="sexo"/></srai>
+    <srai>COMPARE mujer WITH <get name="sexo"/></srai>
     </set>
   </think>
     <condition var="coincide">
@@ -241,12 +245,19 @@
   </think>
     <condition var="coincide">
       <li value="YES">
-      Si
+        <random>
+          <li> Lo has adivinado!! </li>
+          <li> Si! </li>
+        </random>
       </li>
       <li value="NO">
-      No
+        <random>
+          <li>No... es <get name="elegida"/></li>
+          <li>No! Habia pensado en <get name="elegida"/> </li>
+        </random>
       </li>
     </condition>
+    ¿Quieres volver a jugar?
 </template>
 </category>
 
@@ -389,15 +400,15 @@
 
 <!-- Sexo -->
 <category>
-<pattern>Es * mujer</pattern>
+<pattern>* es una mujer</pattern>
 <template>
   <think>
-    <set var="sexoP"><map name="sexo"><star index="1"/></map></set>
-    <set var="coincide">
+    <set var="sexoP"> <map name="sexo"> <star index="1"/> </map> </set>
+    <set var="comp">
       <srai> COMPARE mujer WITH <get var="sexoP"/> </srai>
     </set>
-  </think>
-  <condition var="coincide">
+    </think>
+  <condition var="comp">
     <li value="YES">
       Si
     </li>
@@ -409,14 +420,14 @@
 </category>
 
 <category>
-<pattern>Es * hombre</pattern>
+<pattern>* es un hombre</pattern>
 <template>
   <think>
     <set var="sexoP"><map name="sexo"><star index="1"/></map></set>
     <set var="coincide">
       <srai> COMPARE hombre WITH <get var="sexoP"/> </srai>
     </set>
-  </think>
+    </think>
   <condition var="coincide">
     <li value="YES">
       Si
