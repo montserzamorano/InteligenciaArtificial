@@ -1191,7 +1191,7 @@
 <pattern>detectar enganio</pattern>
 <template>
 <condition name="buscar_enganio">
-  <li value="unknown">¿Quieres jugar otra vez? Pero sin trampas...</li>
+  <li value="unknown">end</li>
   <li>
     <think>
          <set var="temporal"><srai>TOP <get name="buscar_enganio"/></srai></set>
@@ -1289,10 +1289,15 @@
             <set name="buscar_enganio">
               <srai>REMAIN <get name="buscar_enganio"/></srai>
             </set>
-            </think>
          <loop/>
+         </think>
   </li>
 </condition>
+  <random>
+    <li>¿Quieres jugar otra vez? Pero sin trampas...</li>
+    <li>Aunque seas un tramposo me apetece jugar otra vez, ¿quieres?</li>
+    <li>¿Jugamos otra vez?</li>
+  </random>
 </template>
 </category>
 
