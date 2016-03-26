@@ -1,0 +1,1346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+<!-- Author: Montse -->
+
+<!-- Conjunto de reglas para devolver la primera palabra de una frase -->
+<!-- Si la frase no contiene palabras devuelve "end" -->
+<category>
+ <pattern>TOP * *</pattern>
+ <template><star index="1"/></template>
+</category>
+
+<category>
+ <pattern>TOP *</pattern>
+ <template><star index="1"/></template>
+</category>
+
+<category>
+ <pattern>TOP</pattern>
+ <template>end</template>
+</category>
+
+<!-- Conjunto de reglas para devolver el resto de palabras de una frase execto la primera -->
+<!-- Si la frase no contiene palabras devuelve "end" -->
+<category>
+ <pattern>REMAIN * *</pattern>
+ <template><star index="2"/></template>
+</category>
+
+<category>
+ <pattern>REMAIN *</pattern>
+ <template>end</template>
+</category>
+
+<category>
+ <pattern>REMAIN</pattern>
+ <template>end</template>
+</category>
+
+
+
+
+<!-- Regla que devuelve el numero de palabras que se pasan como argumento en <star/> -->
+
+<category>
+<pattern>COUNT</pattern>
+<template>0</template>
+</category>
+
+
+<category>
+    <pattern>
+        COUNT *
+    </pattern>
+    <template>
+        <think>
+            <set var="count">0</set>
+            <set var="list"><star/></set>
+            <set var="item"><srai>TOP <get var="list"/></srai></set>
+        </think>
+        <condition var="item">
+            <li><value>end</value><get var="count"/></li>
+            <li>
+              <think>
+                  <set var="count"><map><name>successor</name><get var="count"/></map></set>
+                  <set var="list"><srai>REMAIN <get var="list"/></srai></set>
+                  <set var="item"><srai>TOP <get var="list"/></srai></set>
+              </think>
+              <loop/>
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+
+
+<!-- Regla que busca un elemento <star/> en <star index="2"/> si existe devuelve la posicion, sino devuelve 0 -->
+<category>
+    <pattern>
+        FINDITEM * IN *
+    </pattern>
+    <template>
+        <think>
+            <set var="buscado"><star index="1"></star></set>
+            <set var="lista"><star index="2"/></set>
+            <set var="item"><srai>TOP <get var="lista"/></srai></set>
+            <set var="count">1</set>
+        </think>
+        <condition var="item">
+          <li value="end">0</li>
+          <li><value><get var="buscado"/></value><get var="count"/></li>
+          <li>
+           <think><set var="count"><map><name>successor</name><get var="count"/></map></set></think>
+           <think><set var="lista"><srai>REMAIN <get var="lista"/></srai></set></think>
+           <think><set var="item"><srai>TOP <get var="lista"/></srai></set></think>
+           <loop/>
+          </li>
+        </condition>
+    </template>
+</category>
+
+
+
+
+<!-- Regla que selecciona la palabra de posicion number(<star/>) en <star index="2">
+     Si la posicion es mayor al numero de palabras devuelve "end"                -->
+<category>
+    <pattern>
+        SELECTITEM <set>number</set> IN *
+    </pattern>
+    <template>
+        <think>
+            <set var="count"><star/></set>
+            <set var="list"><star index="2"/></set>
+            <set var="item"><srai>TOP <get var="list"/></srai></set>
+        </think>
+        <condition var="count">
+            <li value="0">unknown</li>
+            <li><value>1</value><get var="item"/></li>
+            <li>
+              <think>
+                  <set var="count"><map><name>predecessor</name><get var="count"/></map></set>
+               <think><set var="list"><srai>REMAIN <get var="list"/></srai></set></think>
+               <think><set var="item"><srai>TOP <get var="list"/></srai></set></think>
+              </think>
+              <loop/>
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+
+<!-- Regla que elimina la palabra de posicion number(<star/>) en <star index="2"> -->
+<category>
+    <pattern>
+        REMOVEITEM <set>number</set> IN *
+    </pattern>
+    <template>
+        <think>
+            <set var="count"><star/></set>
+            <set var="list"><star index="2"/></set>
+            <set var="list_1"></set>
+            <set var="item"><srai>TOP <get var="list"/></srai></set>
+            <set var="list"><srai>REMAIN <get var="list"/></srai></set>
+        </think>
+        <condition var="count">
+            <li><value>1</value> <get var="list_1"/> <get var="list"/></li>
+            <li>
+               <think>
+                  <set var="count"><map><name>predecessor</name><get var="count"/></map></set>
+                  <set var="list_1"><get var="list_1"/> <get var="item"/></set>
+                  <set var="item"><srai>TOP <get var="list"/></srai></set>
+                  <set var="list"><srai>REMAIN <get var="list"/></srai></set>
+                  <condition var="list">
+                      <li value="end"><set var="list"/></li>
+                  </condition>
+                  <condition var="item">
+                      <li value="end"><set var="item"></set></li>
+                  </condition>
+                </think>
+              <loop/>
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+<!-- Regla que aniade una palabra al principio de una frase si la palabra no estaba ya en la frase -->
+<category>
+    <pattern>
+        ADDITEM * IN *
+    </pattern>
+    <template>
+        <think><set var="set"><star index="2"/></set></think>
+        <think><set var="pos"><srai>FINDITEM <star/> IN <get var="set"/></srai></set></think>
+        <condition var="pos">
+            <li value="0">
+                <think><set var="set"><star/> <get var="set"/></set></think>
+            </li>
+        </condition>
+        <get var="set"/>
+    </template>
+</category>
+
+
+
+<!-- Regla que genera un numero aleatorio en el rango de 1 a number -->
+<category>
+    <pattern>
+        RANDOM <set>number</set>
+    </pattern>
+    <template>
+        <think>
+            <set var="count"><star/></set>
+            <set var="elegido">1</set>
+        </think>
+        <condition var="count">
+            <li><value>1</value> <get var="elegido"/></li>
+            <li>
+                <think>
+                <random>
+                    <li>
+                        <set var="count"><map><name>predecessor</name><get var="count"/></map></set>
+                        <set var="elegido"><map><name>successor</name><get var="elegido"/></map></set>
+                    </li>
+                    <li>
+                        <set var="count"><map><name>predecessor</name><get var="count"/></map></set>
+                    </li>
+                    <li>
+                        <set var="count"><map><name>predecessor</name><get var="count"/></map></set>
+                    </li>
+                </random>
+                </think>
+                <loop/>
+            </li>
+        </condition>
+    </template>
+</category>
+
+
+
+<!-- Regla que permite iterar sobre las distintas palabras de una frase (esta asociado con NEXT)-->
+<category>
+<pattern>ITERATE *</pattern>
+<template>
+	<think><set name="iterator"><star/></set></think>
+	<srai>NEXT</srai>
+</template>
+</category>
+
+
+<!-- Regla que permite iterar sobre las distintas palabras de una frase (esta asociado con ITERATE)-->
+<category>
+<pattern>NEXT</pattern>
+<template>
+	<condition name="iterator">
+	    <li value="end">end</li>
+		<li>
+           <srai>TOP <get name="iterator"/></srai>
+           <think>
+               <set name="iterator"><srai>REMAIN <get name="iterator"/></srai></set>
+           </think>
+		</li>
+	</condition>
+</template>
+</category>
+
+
+<!-- Regla que permite comparar dos cadenas, si son iguales devuelve YES en otro caso devuelve NO-->
+<category>
+    <pattern>
+        COMPARE * WITH *
+    </pattern>
+    <template>
+        <think><set var="local"><uppercase><star index="2"/></uppercase></set></think>
+        <condition var="local">
+            <li><value><uppercase><star/></uppercase></value>YES</li>
+            <li>NO</li>
+        </condition>
+    </template>
+</category>
+
+<!-- FUNCIONES AUXILIARES NIVEL 2 -->
+
+<!-- Inicializar listas-->
+<category>
+<pattern>inicializar</pattern>
+<template>
+  <think>
+    <set name="adivinado">false</set>
+    <set name="personaje">null</set>
+    <set name="list_names"> Alejandro Alfonso Antonio Cristina Gabriela Ivan Javier Juan Laura Luis Marco Maria Paco Pepe Sofia Sonia </set>
+    <set name="list_caract">ojos pelo piel gafas bigote barba sexo</set>
+    <set name="ojos">oscuros claros</set>
+    <set name="pelo">moreno blanco rubio calvo pelirrojo marron</set>
+    <set name="piel">oscura clara</set>
+    <set name="gafas">si no</set>
+    <set name="bigote">si no</set>
+    <set name="barba">si no</set>
+    <set name="sexo">hombre mujer</set>
+  </think>
+</template>
+</category>
+
+<!-- Eliminar candidatos-->
+<category>
+<pattern>ELIMINARNO *</pattern>
+<template>
+	<think><set name="iterator"><star/></set></think>
+	<srai>AUXNO</srai>
+</template>
+</category>
+
+<category>
+<pattern>ELIMINARSI *</pattern>
+<template>
+	<think><set name="iterator"><star/></set></think>
+	<srai>AUXYES</srai>
+</template>
+</category>
+
+<category>
+<pattern>AUXNO</pattern>
+<template>
+  <think>
+	<condition name="iterator">
+	    <li value="end">end</li>
+		<li>
+           <set var="per"> <srai>TOP <get name="iterator"/> </srai> </set>
+           <condition name="caracteristica">
+            <li value="ojos">
+              <set var="c"><map name="ojos"><get var="per"/></map></set>
+            </li>
+            <li value="pelo">
+              <set var="c"><map name="pelo"><get var="per"/></map></set>
+            </li>
+            <li value="piel">
+              <set var="c"><map name="piel"><get var="per"/></map></set>
+            </li>
+            <li value="gafas">
+              <set var="c"><map name="gafas"><get var="per"/></map></set>
+            </li>
+            <li value="bigote">
+              <set var="c"><map name="bigote"><get var="per"/></map></set>
+            </li>
+            <li value="barba">
+              <set var="c"><map name="barba"><get var="per"/></map></set>
+            </li>
+            <li value="sexo">
+              <set var="c"><map name="sexo"><get var="per"/></map></set>
+            </li>
+           </condition>
+
+           <set name="iterator"><srai>REMAIN <get name="iterator"/></srai></set>
+           <set var="comparar">
+              <srai>
+                COMPARE <get var="c"/> WITH <get name="part"/>
+              </srai>
+           </set>
+           <condition var="comparar">
+              <li value="YES">
+                <set var="pos">
+                  <srai>
+                    FINDITEM <get var="per"/> IN <get name="list_names"/>
+                  </srai>
+                </set>
+                <set name="list_names">
+                  <srai>
+                    REMOVEITEM <get var="pos"/> IN <get name="list_names"/>
+                  </srai>
+                </set>
+              </li>
+           </condition>
+           <loop/>
+		</li>
+	</condition>
+  </think>
+</template>
+</category>
+
+<category>
+<pattern>AUXYES</pattern>
+<template>
+  <think>
+	<condition name="iterator">
+	    <li value="end">end</li>
+		<li>
+           <set var="per"> <srai>TOP <get name="iterator"/> </srai> </set>
+           <condition name="caracteristica">
+            <li value="ojos">
+              <set var="c"><map name="ojos"><get var="per"/></map></set>
+            </li>
+            <li value="pelo">
+              <set var="c"><map name="pelo"><get var="per"/></map></set>
+            </li>
+            <li value="piel">
+              <set var="c"><map name="piel"><get var="per"/></map></set>
+            </li>
+            <li value="gafas">
+              <set var="c"><map name="gafas"><get var="per"/></map></set>
+            </li>
+            <li value="bigote">
+              <set var="c"><map name="bigote"><get var="per"/></map></set>
+            </li>
+            <li value="barba">
+              <set var="c"><map name="barba"><get var="per"/></map></set>
+            </li>
+            <li value="sexo">
+              <set var="c"><map name="sexo"><get var="per"/></map></set>
+            </li>
+           </condition>
+
+           <set name="iterator"><srai>REMAIN <get name="iterator"/></srai></set>
+           <set var="comparar">
+              <srai>
+                COMPARE <get var="c"/> WITH <get name="part"/>
+              </srai>
+           </set>
+           <condition var="comparar">
+              <li value="NO">
+                <set var="pos">
+                  <srai>
+                    FINDITEM <get var="per"/> IN <get name="list_names"/>
+                  </srai>
+                </set>
+                <set name="list_names">
+                  <srai>
+                    REMOVEITEM <get var="pos"/> IN <get name="list_names"/>
+                  </srai>
+                </set>
+              </li>
+           </condition>
+           <loop/>
+		</li>
+	</condition>
+  </think>
+</template>
+</category>
+
+<!-- Adivinar personaje-->
+<category>
+<pattern>ADIVINAR</pattern>
+<template>
+  <think>
+    <set var="contador">
+      <srai>
+        COUNT <get name="list_names"/>
+      </srai>
+    </set>
+    <condition var="contador">
+      <li value="1">
+        <set name="personaje">
+          <get name="list_names"/>
+        </set>
+      </li>
+    </condition>
+  </think>
+</template>
+</category>
+
+<!-- Ajustar listas-->
+<category>
+<pattern>ajustar listas</pattern>
+<template>
+  <set name="iterar_caracteristicas"><get name="list_caract"/></set>
+  <condition name="iterar_caracteristicas">
+    <li value="end">end</li>
+		<li>
+           <set var="car">
+            <srai>TOP <get name="iterar_caracteristicas"/></srai>
+          </set>
+          <set name="iterar_personajes"><get name="list_names"/></set>
+            <condition name="iterar_personajes">
+              <li value="end">end</li>
+              <li>
+                <set var="primer">
+                  <srai>TOP <get name="iterar_personajes"/></srai>
+                </set>
+                <condition var="car">
+                  <li value="ojos">
+                    <set var="concreta">
+                      <map name="ojos"><get var="primer"/></map>
+                    </set>
+                    <set var="ojosTemp">
+                    <srai>
+                      ADDITEM <get var="concreta"/> IN <get var="ojosTemp"/>
+                    </srai>
+                    </set>
+                  </li>
+                  <li value="pelo">
+                  <set var="concreta">
+                    <map name="pelo"><get var="primer"/></map>
+                  </set>
+                  <set var="peloTemp">
+                  <srai>
+                    ADDITEM <get var="concreta"/> IN <get var="peloTemp"/>
+                  </srai>
+                  </set>
+                  </li>
+                  <li value="piel">
+                  <set var="concreta">
+                    <map name="piel"><get var="primer"/></map>
+                  </set>
+                  <set var="pielTemp">
+                  <srai>
+                    ADDITEM <get var="concreta"/> IN <get var="pielTemp"/>
+                  </srai>
+                  </set>
+                  </li>
+                  <li value="barba">
+                  <set var="concreta">
+                    <map name="barba"><get var="primer"/></map>
+                  </set>
+                  <set var="barbaTemp">
+                  <srai>
+                    ADDITEM <get var="concreta"/> IN <get var="barbaTemp"/>
+                  </srai>
+                  </set>
+                  </li>
+                  <li value="bigote">
+                  <set var="concreta">
+                    <map name="bigote"><get var="primer"/></map>
+                  </set>
+                  <set var="bigoteTemp">
+                  <srai>
+                    ADDITEM <get var="concreta"/> IN <get var="bigoteTemp"/>
+                  </srai>
+                  </set>
+                  </li>
+                  <li value="gafas">
+                  <set var="gafas">
+                    <map name="gafas"><get var="primer"/></map>
+                  </set>
+                  <set var="gafasTemp">
+                  <srai>
+                    ADDITEM <get var="concreta"/> IN <get var="gafasTemp"/>
+                  </srai>
+                  </set>
+                  </li>
+                  <li value="sexo">
+                  <set var="concreta">
+                    <map name="sexo"><get var="primer"/></map>
+                  </set>
+                  <set var="sexoTemp">
+                  <srai>
+                    ADDITEM <get var="concreta"/> IN <get var="sexoTemp"/>
+                  </srai>
+                  </set>
+                  </li>
+                </condition>
+
+                  <set name="iterar_personajes">
+                    <srai>REMAIN <get name="iterar_personajes"/></srai>
+                  </set>
+                <loop/>
+              </li>
+            </condition>
+               <set name="iterar_caracteristicas">
+                <srai>REMAIN <get name="iterar_caracteristicas"/></srai>
+                </set>
+        <loop/>
+		</li>
+	</condition>
+
+  <set var="contar">
+    <srai> COUNT <get var="ojosTemp"/> </srai>
+  </set>
+  <condition var="contar">
+    <li value="2">
+      <set name="ojos">
+        <srai> TOP <get var="ojosTemp"/> </srai>
+      </set>
+      <set var="pos">
+        <srai>
+          FINDITEM ojos IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+
+  <set var="contar">
+    <srai> COUNT <get var="peloTemp"/> </srai>
+  </set>
+  <condition var="contar">
+  <li value="2">
+    <set name="pelo">
+      <srai> TOP <get var="peloTemp"/> </srai>
+    </set>
+      <set var="pos">
+        <srai>
+          FINDITEM pelo IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+  <set var="contar">
+    <srai> COUNT <get var="pielTemp"/> </srai>
+  </set>
+  <condition var="contar">
+  <li value="2">
+    <set name="piel">
+      <srai> TOP <get var="pielTemp"/> </srai>
+    </set>
+      <set var="pos">
+        <srai>
+          FINDITEM piel IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+  <set var="contar">
+    <srai> COUNT <get var="barbaTemp"/> </srai>
+  </set>
+  <condition var="contar">
+  <li value="2">
+    <set name="barba">
+      <srai> TOP <get var="barbaTemp"/> </srai>
+    </set>
+      <set var="pos">
+        <srai>
+          FINDITEM barba IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+  <set var="contar">
+    <srai> COUNT <get var="bigoteTemp"/> </srai>
+  </set>
+  <condition var="contar">
+  <li value="2">
+    <set name="bigote">
+      <srai> TOP <get var="bigoteTemp"/> </srai>
+    </set>
+      <set var="pos">
+        <srai>
+          FINDITEM bigote IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+  <set var="contar">
+    <srai> COUNT <get var="gafasTemp"/> </srai>
+  </set>
+  <condition var="contar">
+  <li value="2">
+    <set name="gafas">
+      <srai> TOP <get var="gafasTemp"/> </srai>
+    </set>
+      <set var="pos">
+        <srai>
+          FINDITEM gafas IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+  <set var="contar">
+    <srai> COUNT <get var="sexoTemp"/> </srai>
+  </set>
+  <condition var="contar">
+  <li value="2">
+    <set name="sexo">
+      <srai> TOP <get var="sexoTemp"/> </srai>
+    </set>
+      <set var="pos">
+        <srai>
+          FINDITEM sexo IN <get name="list_caract"/>
+        </srai>
+      </set>
+      <set name="list_caract">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+          </srai>
+      </set>
+    </li>
+  </condition>
+
+</template>
+</category>
+
+<!-- Escoger pregunta-->
+<category>
+<pattern>siguiente pregunta</pattern>
+<template>
+    <srai> AJUSTAR LISTAS </srai>
+    <set name="caracteristica">
+      <srai> TOP <get name="list_caract"/> </srai>
+    </set>
+    <condition name="caracteristica">
+      <li value="ojos">
+        <set name="part">
+          <srai> TOP <get name="ojos"/> </srai>
+        </set>
+        <set var="pregunta"> Tiene los ojos <get name="part"/>?</set>
+      </li>
+      <li value="pelo">
+        <set name="part">
+          <srai> TOP <get name="pelo"/> </srai>
+        </set>
+        <condition name="part">
+          <li value="calvo">
+            <set var="pregunta">Es calvo?</set>
+          </li>
+          <li>
+            <set var="pregunta">Tiene el pelo <get name="part"/>? </set>
+          </li>
+        </condition>
+      </li>
+      <li value="piel">
+        <set name="part"> <srai> TOP <get name="piel"/> </srai> </set>
+        <set var="pregunta"> Tiene la piel <get name="part"/>? </set>
+      </li>
+      <li value="gafas">
+        <set name="part"> <srai> TOP <get name="gafas"/> </srai> </set>
+        <set var="pregunta"> Tiene gafas? </set>
+      </li>
+      <li value="bigote">
+        <set name="part"> <srai> TOP <get name="bigote"/> </srai> </set>
+        <set var="pregunta"> Tiene bigote? </set>
+      </li>
+      <li value="barba">
+        <set name="part"> <srai> TOP <get name="barba"/> </srai> </set>
+        <set var="pregunta"> Tiene barba? </set>
+      </li>
+      <li value="sexo">
+        <set name="part"> <srai> TOP <get name="sexo"/> </srai> </set>
+        <set var="pregunta"> Es <get name="part"/>? </set>
+      </li>
+    </condition>
+  <srai> ADIVINAR </srai>
+  <condition name="personaje">
+    <li value="null">
+      <get var="pregunta"/>
+      <think>
+        <set name="buscar_enganio">
+          <srai>
+            ADDITEM <get name="caracteristica"/> IN <get name="buscar_enganio"/>
+          </srai>
+        </set>
+      </think>
+    </li>
+    <li>
+      <think>
+      <set name="adivinado">true</set>
+      </think>
+      <random>
+        <li> Es <get name="personaje"/>! </li>
+        <li> Ya lo tengo! <get name="personaje"/>! </li>
+        <li> Estoy bastante seguro de que es <get name="personaje"/> </li>
+      </random>
+    </li>
+  </condition>
+</template>
+</category>
+
+<!-- NO -->
+
+<category>
+<pattern>no ^ </pattern>
+<template>
+  <think>
+    <condition name="caracteristica">
+      <li value="ojos">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="ojos"/>
+          </srai>
+        </set>
+        <set name="ojos">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="ojos"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="ojos"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="pelo">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="pelo"/>
+          </srai>
+        </set>
+        <set name="pelo">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="pelo"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="pelo"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="piel">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="piel"/>
+          </srai>
+        </set>
+        <set name="piel">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="piel"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="piel"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="gafas">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="gafas"/>
+          </srai>
+        </set>
+        <set name="gafas">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="gafas"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="gafas"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="bigote">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="bigote"/>
+          </srai>
+        </set>
+        <set name="bigote">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="bigote"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="bigote"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="barba">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="barba"/>
+          </srai>
+        </set>
+        <set name="barba">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="barba"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="barba"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="sexo">
+        <set var="pos">
+          <srai>
+            FINDITEM <get name="part"/> IN <get name="sexo"/>
+          </srai>
+        </set>
+        <set name="sexo">
+          <srai>
+            REMOVEITEM <get var="pos"/> IN <get name="sexo"/>
+          </srai>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="sexo"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+    </condition>
+  </think>
+  <srai> ELIMINARNO <get name="list_names"/> </srai>
+  <srai> SIGUIENTE PREGUNTA </srai>
+</template>
+</category>
+
+<!-- SI -->
+<category>
+<pattern>si ^ </pattern>
+<template>
+  <think>
+    <condition name="caracteristica">
+      <li value="ojos">
+        <set name="ojos"> <get name="part"/> </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="ojos"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="pelo">
+        <set name="pelo">
+          <get name="part"/>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="pelo"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="piel">
+        <set name="piel">
+          <get name="part"/>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="piel"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="gafas">
+        <set name="gafas">
+          <get name="part"/>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="gafas"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="bigote">
+        <set name="bigote">
+          <get name="part"/>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="bigote"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="barba">
+        <set name="barba">
+          <get name="part"/>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="barba"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+      <li value="sexo">
+        <set name="sexo">
+          <get name="part"/>
+        </set>
+        <set var="contador">
+          <srai>
+            COUNT <get name="sexo"/>
+          </srai>
+        </set>
+        <condition var="contador">
+          <li value="1">
+            <set var="pos">
+              <srai>
+                FINDITEM <get name="caracteristica"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+            <set name="list_caract">
+              <srai>
+                REMOVEITEM <get var="pos"/> IN <get name="list_caract"/>
+              </srai>
+            </set>
+          </li>
+        </condition>
+      </li>
+    </condition>
+  </think>
+  <srai> ELIMINARSI <get name="list_names"/> </srai>
+  <srai> SIGUIENTE PREGUNTA </srai>
+</template>
+</category>
+
+<!-- Intentando enganiar al agente -->
+<category>
+<pattern>detectar enganio</pattern>
+<template>
+<condition name="buscar_enganio">
+  <li value="unknown">¿Quieres jugar otra vez? Pero sin trampas...</li>
+  <li>
+    <think>
+         <set var="temporal"><srai>TOP <get name="buscar_enganio"/></srai></set>
+         <condition var="temporal">
+          <li value="ojos">
+            <set var="temporal2"><map name="ojos"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="ojos"><get name="alternativa"/></map></set>
+          </li>
+          <li value="pelo">
+            <set var="temporal2"><map name="pelo"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="pelo"><get name="alternativa"/></map></set>
+          </li>
+          <li value="piel">
+            <set var="temporal2"><map name="piel"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="piel"><get name="alternativa"/></map></set>
+          </li>
+          <li value="barba">
+            <set var="temporal2"><map name="barba"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="barba"><get name="alternativa"/></map></set>
+          </li>
+          <li value="bigote">
+            <set var="temporal2"><map name="bigote"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="bigote"><get name="alternativa"/></map></set>
+          </li>
+          <li value="gafas">
+            <set var="temporal2"><map name="gafas"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="gafas"><get name="alternativa"/></map></set>
+          </li>
+          <li value="sexo">
+            <set var="temporal2"><map name="sexo"><get name="personaje"/></map></set>
+            <set var="temporal3"><map name="sexo"><get name="alternativa"/></map></set>
+          </li>
+         </condition>
+
+            <set var="enganio">
+              <srai> COMPARE <get var="temporal2"/> WITH <get var="temporal3"/> </srai>
+            </set>
+          </think>
+            <condition var="enganio">
+              <li value="NO">
+                <condition var="temporal">
+                  <li value="ojos">
+                    Has dicho que tiene <get var="temporal"/> <get var="temporal2"/> y <get name="alternativa"/> tiene <get var="temporal"/> <get var="temporal3"/>
+                  </li>
+                  <li value="pelo">
+                    Has dicho que tiene <get var="temporal"/> <get var="temporal2"/> y <get name="alternativa"/> tiene <get var="temporal"/> <get var="temporal3"/>
+                  </li>
+                  <li value="barba">
+                    <condition value="temporal2">
+                      <li value="si">
+                        Has dicho que tiene barba y <get name="alternativa"/> no la tiene!
+                      </li>
+                      <li>
+                        Has dicho que no tiene barba y <get name="alternativa"/> si la tiene!
+                      </li>
+                    </condition>
+                  </li>
+                  <li value="bigote">
+                  <condition value="temporal2">
+                    <li value="si">
+                      Has dicho que tiene bigote y <get name="alternativa"/> no lo tiene!
+                    </li>
+                    <li>
+                      Has dicho que no tiene bigote y <get name="alternativa"/> si lo tiene!
+                    </li>
+                  </condition>
+                  </li>
+                  <li value="sexo">
+                  <condition value="temporal2">
+                    <li value="mujer">
+                      Has dicho que es mujer y <get name="alternativa"/> es un hombre!
+                    </li>
+                    <li>
+                      Has dicho que es hombre y <get name="alternativa"/> es mujer!
+                    </li>
+                  </condition>
+                  </li>
+                  <li value="gafas">
+                  <condition value="temporal2">
+                    <li value="si">
+                      Has dicho que tiene gafas y <get name="alternativa"/> no las tiene!
+                    </li>
+                    <li>
+                      Has dicho que no tiene gafas y <get name="alternativa"/> si las tiene!
+                    </li>
+                  </condition>
+                  </li>
+                  <li value="piel">
+                    Has dicho que tiene <get var="temporal"/> <get var="temporal2"/> y <get name="alternativa"/> tiene <get var="temporal"/> <get var="temporal3"/>
+                  </li>
+                </condition>
+              </li>
+            </condition>
+            <think>
+            <set name="buscar_enganio">
+              <srai>REMAIN <get name="buscar_enganio"/></srai>
+            </set>
+            </think>
+         <loop/>
+  </li>
+</condition>
+</template>
+</category>
+
+<category>
+<pattern>^ no, es * </pattern>
+<template>
+  <random>
+    <li>Imposible!!</li>
+    <li>Eso no puede ser!</li>
+    <li>Me estas engañando</li>
+  </random>
+  <think><set name="alternativa"><star index="2"/></set></think>
+  <srai> DETECTAR ENGANIO </srai>
+</template>
+</category>
+
+<!-- NIVEL 2: EL AGENTE TRATA DE ADIVINAR EL PERSONAJE PENSADO POR EL HUMANO -->
+<!-- Comienzo del juego -->
+
+<category>
+<pattern>^ jugar ^ </pattern>
+<template>
+  <random>
+    <li> Me apetece mucho!! </li>
+    <li> Vale! Sera divertido! </li>
+  </random>
+</template>
+</category>
+
+<category>
+<pattern> ^ elijo ^ </pattern>
+<template>
+  <think> <srai> INICIALIZAR </srai> </think>
+  Cuando lo pienses avisame
+</template>
+</category>
+
+<category>
+<pattern> Vale </pattern>
+<template>
+  <random>
+    <li>¿Quien elige?</li>
+    <li>¿Quien escoge el personaje?</li>
+  </random>
+</template>
+</category>
+
+<!-- Siguiente pregunta-->
+<category>
+<pattern> Ya ^ </pattern>
+<template>
+  <srai> SIGUIENTE PREGUNTA </srai>
+</template>
+</category>
+
+</aiml>
