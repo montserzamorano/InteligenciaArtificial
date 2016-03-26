@@ -1314,7 +1314,7 @@
 </template>
 </category>
 
-<!-- NIVEL 2: EL AGENTE TRATA DE ADIVINAR EL PERSONAJE PENSADO POR EL HUMANO -->
+<!-- NIVEL 3: EL AGENTE TRATA DE ADIVINAR EL PERSONAJE DE MANERA INTELIGENTE -->
 <!-- Comienzo del juego -->
 
 <category>
