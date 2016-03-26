@@ -447,14 +447,16 @@
   <set name="iterar_caracteristicas"><get name="list_caract"/></set>
   <condition name="iterar_caracteristicas">
     <li value="end">end</li>
-		<li>
+		<li><think>
            <set var="car">
             <srai>TOP <get name="iterar_caracteristicas"/></srai>
           </set>
           <set name="iterar_personajes"><get name="list_names"/></set>
+          </think>
             <condition name="iterar_personajes">
               <li value="end">end</li>
               <li>
+                <think>
                 <set var="primer">
                   <srai>TOP <get name="iterar_personajes"/></srai>
                 </set>
@@ -534,6 +536,7 @@
                   <set name="iterar_personajes">
                     <srai>REMAIN <get name="iterar_personajes"/></srai>
                   </set>
+                  </think>
                 <loop/>
               </li>
             </condition>
@@ -543,7 +546,7 @@
         <loop/>
 		</li>
 	</condition>
-
+<think>
   <set var="contar">
     <srai> COUNT <get var="ojosTemp"/> </srai>
   </set>
@@ -692,7 +695,7 @@
       </set>
     </li>
   </condition>
-
+</think>
 </template>
 </category>
 
@@ -700,6 +703,7 @@
 <category>
 <pattern>siguiente pregunta</pattern>
 <template>
+<think>
     <srai> AJUSTAR LISTAS </srai>
     <set name="caracteristica">
       <srai> TOP <get name="list_caract"/> </srai>
@@ -745,6 +749,7 @@
         <set var="pregunta"> Es <get name="part"/>? </set>
       </li>
     </condition>
+    </think>
   <srai> ADIVINAR </srai>
   <condition name="personaje">
     <li value="null">
@@ -1235,7 +1240,7 @@
                     Has dicho que tiene <get var="temporal"/> <get var="temporal2"/> y <get name="alternativa"/> tiene <get var="temporal"/> <get var="temporal3"/>
                   </li>
                   <li value="barba">
-                    <condition value="temporal2">
+                    <condition var="temporal2">
                       <li value="si">
                         Has dicho que tiene barba y <get name="alternativa"/> no la tiene!
                       </li>
@@ -1245,7 +1250,7 @@
                     </condition>
                   </li>
                   <li value="bigote">
-                  <condition value="temporal2">
+                  <condition var="temporal2">
                     <li value="si">
                       Has dicho que tiene bigote y <get name="alternativa"/> no lo tiene!
                     </li>
@@ -1255,7 +1260,7 @@
                   </condition>
                   </li>
                   <li value="sexo">
-                  <condition value="temporal2">
+                  <condition var="temporal2">
                     <li value="mujer">
                       Has dicho que es mujer y <get name="alternativa"/> es un hombre!
                     </li>
@@ -1265,7 +1270,7 @@
                   </condition>
                   </li>
                   <li value="gafas">
-                  <condition value="temporal2">
+                  <condition var="temporal2">
                     <li value="si">
                       Has dicho que tiene gafas y <get name="alternativa"/> no las tiene!
                     </li>
